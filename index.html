@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Themed Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #2c3e50; /* Serene dark blue background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .form-container {
+            background: rgba(44, 62, 80, 0.95); /* Subtle dark container */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            width: 370px;
+            animation: fadeIn 1s ease-in-out;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.6);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            color: #E0E0E0;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            color: #E0E0E0;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        select, input {
+            width: 94%;
+            padding: 10px;
+            border: 1px solid #34495e;
+            border-radius: 5px;
+            background: #34495e; /* Serene input background */
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        select:hover, input:hover {
+            background: #465c71;
+            border-color: #7f8c8d;
+        }
+
+        select:focus, input:focus {
+            border: 2px solid #7f8c8d;
+            background: #465c71;
+            box-shadow: 0 0 10px rgba(127, 140, 141, 0.2);
+        }
+
+        option {
+            color: black;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(135deg, #2980b9, #2c3e50);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(41, 128, 185, 0.4);
+        }
+
+        .loading {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        .success-btn {
+            background: #27ae60;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Customer Support HoC</h2>
+        <form id="contactForm">
+            <div class="form-group">
+                <label for="first_name">First Name</label>
+                <input type="text" id="first_name" name="first_name" required>
+            </div>
+            <div class="form-group">
+                <label for="last_name">Last Name</label>
+                <input type="text" id="last_name" name="last_name" required>
+            </div>
+            <div class="form-group">
+                <label for="country_code">Country Code</label>
+                <select id="country_code" name="country_code" required>
+                    <option value="+91">+91 (India)</option>
+                    <option value="+1">+1 (USA)</option>
+                    <option value="+31">+31 (Netherlands)</option>
+                    <option value="+44">+44 (UK)</option>
+                    <option value="+61">+61 (Australia)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="phone_no">Phone Number</label>
+                <input type="tel" id="phone_no" name="phone_no" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <button type="submit" id="submitBtn" class="submit-btn">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('contactForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.textContent = 'Our Agent will call you in 2-5 minutes';
+            submitBtn.classList.add('loading');
+
+            const formData = {
+                first_name: document.getElementById('first_name').value,
+                last_name: document.getElementById('last_name').value,
+                phone_no: document.getElementById('phone_no').value,
+                email: document.getElementById('email').value,
+                country_code: document.getElementById('country_code').value
+            };
+
+            fetch('https://api-f1db6c.stack.tryrelevance.com/latest/studios/6daaf9da-8d83-4990-973c-9700a6c86a7f/trigger_webhook?project=40f9760672f4-47b5-89f9-e3cdb99d658d', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': '40f9760672f4-47b5-89f9-e3cdb99d658d:sk-YWY0MzNlMzEtMWI4Mi00MDI3LTg4ODMtMDhlNmUwM2YwM2Qz' 
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok.');
+                }
+                return response.text();
+            })
+            .then(() => {
+                submitBtn.textContent = 'Submitted ✔';
+                submitBtn.classList.remove('loading');
+                submitBtn.classList.add('success-btn');
+                submitBtn.disabled = true;
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('Our AI Agent will Contact you Soon!!');
+                submitBtn.textContent = 'Submit';
+                submitBtn.classList.remove('loading');
+            });
+        });
+    </script>
+</body>
+</html>
